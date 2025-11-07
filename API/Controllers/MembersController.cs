@@ -1,15 +1,14 @@
+using Api.Controllers;
 using API.Data;
 using API.Entities;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")] // localhost:5001/api/members
-    [ApiController]
     // HERE is where the AppDbContext is injected into the MembersController, instantiating it
-    public class MembersController(AppDbContext context) : ControllerBase
+    public class MembersController(AppDbContext context) : BaseApiController
     {
         [HttpGet]
         // An ActionResult is analagous to HttpResponse in Spring
@@ -23,6 +22,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")] // localhost:5001/api/members/bob-id
+        [Authorize]
         public async Task<ActionResult<AppUser>> GetMember(string id)
         {
             var user = await context.Users.FindAsync(id);
