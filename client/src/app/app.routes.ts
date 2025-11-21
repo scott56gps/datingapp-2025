@@ -8,6 +8,7 @@ import { authGuard } from '../core/guards/auth-guard';
 import { TestErrors } from '../features/test-errors/test-errors';
 import { NotFound } from '../shared/errors/not-found/not-found';
 import { ServerError } from '../shared/errors/server-error/server-error';
+import { Notes } from '../features/notes/notes';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -21,6 +22,7 @@ export const routes: Routes = [
       { path: 'members/:id', component: MemberDetailed },
       { path: 'lists', component: Lists },
       { path: 'messages', component: Messages },
+      { path: 'notes', component: Notes },
     ],
   },
   // We can provide *multiple* guards

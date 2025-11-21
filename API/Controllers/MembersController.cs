@@ -1,33 +1,36 @@
 using Api.Controllers;
-using API.Data;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
     // HERE is where the AppDbContext is injected into the MembersController, instantiating it
-    public class MembersController(AppDbContext context) : BaseApiController
+    [Authorize]
+    public class MembersController(IMemberRepository memberRepository) : BaseApiController
     {
         [HttpGet]
         // An ActionResult is analagous to HttpResponse in Spring
-        public async Task<ActionResult<IReadOnlyList<AppUser>>> GetMembers()
+        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
         {
             // An IReadOnlyList is simply an indexable list.  It is not modifiable.
             // Await *delegates* contacting the database to another thread, freeing up this thread
-            var members = await context.Users.ToListAsync();
-
-            return members;
+            return Ok(await memberRepository.GetMembersAsync());
         }
 
         [HttpGet("{id}")] // localhost:5001/api/members/bob-id
-        [Authorize]
-        public async Task<ActionResult<AppUser>> GetMember(string id)
+        public async Task<ActionResult<Member>> GetMember(string id)
         {
-            var user = await context.Users.FindAsync(id);
-            if (user == null) return NotFound();
-            return Ok(user);
+            var member = await memberRepository.GetMemberByIdAsync(id);
+            if (member == null) return NotFound();
+            return Ok(member);
+        }
+
+        [HttpGet("{id}/photos")]
+        public async Task<ActionResult<IReadOnlyList<Photo>>> GetMemberPhotos(string id)
+        {
+            return Ok(await memberRepository.GetPhotosForMemberAsync(id));
         }
     }
 }
