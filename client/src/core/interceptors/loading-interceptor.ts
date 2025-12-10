@@ -1,20 +1,20 @@
 import { HttpEvent, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { BusyService } from '../services/busy-service';
 import { delay, finalize, of, tap } from 'rxjs';
+import { BusyService } from '../services/busy-service';
+import { inject } from '@angular/core';
 
 const cache = new Map<string, HttpEvent<unknown>>();
 
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const busyService = inject(BusyService);
 
-  // Create arbitrary time to represent a network request
   busyService.busy();
 
   if (req.method === 'GET') {
     const cachedResponse = cache.get(req.url);
     if (cachedResponse) {
       // HERE, we short circuit and immediately return what we have.
+      busyService.idle();
       return of(cachedResponse);
     }
   }
