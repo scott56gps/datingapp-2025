@@ -19,10 +19,12 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         .SingleOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<IReadOnlyList<Member>> GetMembersAsync()
+    public async Task<IReadOnlyList<Member>> GetMembersAsync(PagingParams pagingParams)
     {
         var query = context.Members.AsQueryable();
-        return await context.Members.ToListAsync();
+
+        // Instead of returning all the members, we return paged results, according to the query
+        return await PaginationHelper.CreateAsync(query, pagingParams.PageNumber, pagingParams.PageSize);
     }
 
     public async Task<IReadOnlyList<Photo>> GetPhotosForMemberAsync(string memberId)
