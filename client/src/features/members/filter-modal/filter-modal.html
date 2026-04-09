@@ -1,0 +1,70 @@
+<dialog #filterModal class="modal">
+  <div class="modal-box max-w-lg">
+    <h3 class="text-lg font-bold">Select Filters</h3>
+
+    <div class="flex justify-between w-full items-center mt-6">
+      <div class="flex flex-col w-full gap-6">
+        <label class="flex justify-between items-center">
+          <span class="font-semibold">Select Gender:</span>
+          <form class="filter">
+            <input type="reset" value="x" class="btn btn-square" />
+            <input
+              type="radio"
+              class="btn"
+              [(ngModel)]="memberFilter().gender"
+              aria-label="Male"
+              name="gender"
+              value="male"
+            />
+            <input
+              type="radio"
+              class="btn"
+              [(ngModel)]="memberFilter().gender"
+              aria-label="Female"
+              name="gender"
+              value="female"
+            />
+          </form>
+        </label>
+        <label class="flex justify-between items-center">
+          <span class="font-semibold">Select Age:</span>
+          <div class="flex gap-3">
+            <input
+              type="number"
+              class="input w-20"
+              [min]="18"
+              [(ngModel)]="memberFilter().minAge"
+              name="minAge"
+              (change)="onMinAgeChange()"
+            />
+            <input
+              type="number"
+              class="input w-20"
+              [min]="memberFilter().minAge || 18"
+              [(ngModel)]="memberFilter().maxAge"
+              name="maxAge"
+              (change)="onMaxAgeChange()"
+            />
+          </div>
+        </label>
+        <label class="flex justify-between items-center">
+          <span class="font-semibold">Sort Order:</span>
+          <select name="orderBy" class="select" [(ngModel)]="memberFilter().orderBy">
+            <option disabled selected>Order By</option>
+            <option value="created">Newest Members</option>
+            <option value="lastActive">Recently Active</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-action flex justify-between">
+      <button (click)="close()" class="btn btn-gray">Close</button>
+      <button (click)="submit()" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+
+  <form method="dialog" class="modal-backdrop">
+    <button (click)="close()">Close</button>
+  </form>
+</dialog>

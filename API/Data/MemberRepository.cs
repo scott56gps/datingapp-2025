@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,12 +21,30 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         .SingleOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<IReadOnlyList<Member>> GetMembersAsync(PagingParams pagingParams)
+    public async Task<PaginatedResult<Member>> GetMembersAsync(MemberParams memberParams)
     {
         var query = context.Members.AsQueryable();
 
-        // Instead of returning all the members, we return paged results, according to the query
-        return await PaginationHelper.CreateAsync(query, pagingParams.PageNumber, pagingParams.PageSize);
+        // Filter out the current member
+        query = query.Where(x => x.Id != memberParams.CurrentMemberId);
+        if (memberParams.Gender != null)
+        {
+            query = query.Where(x => x.Gender == memberParams.Gender);
+        }
+
+        var minDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MaxAge - 1));
+        var maxDateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddYears(-memberParams.MinAge));
+
+        query = query.Where(x => x.DateOfBirth >= minDateOfBirth && x.DateOfBirth <= maxDateOfBirth);
+
+        // Sorting
+        query = memberParams.OrderBy switch
+        {
+            "created" => query.OrderByDescending(x => x.Created),
+            _ => query.OrderByDescending(x => x.LastActive)
+        };
+
+        return await PaginationHelper.CreateAsync(query, memberParams.PageNumber, memberParams.PageSize);
     }
 
     public async Task<IReadOnlyList<Photo>> GetPhotosForMemberAsync(string memberId)

@@ -3,6 +3,7 @@ using Api.Controllers;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +18,11 @@ namespace API.Controllers
     {
         [HttpGet]
         // An ActionResult is analagous to HttpResponse in Spring
-        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers()
+        public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers(
+            [FromQuery] MemberParams memberParams)
         {
-            // An IReadOnlyList is simply an indexable list.  It is not modifiable.
-            // Await *delegates* contacting the database to another thread, freeing up this thread
-            return Ok(await memberRepository.GetMembersAsync());
+            memberParams.CurrentMemberId = User.GetMemberId();
+            return Ok(await memberRepository.GetMembersAsync(memberParams));
         }
 
         [HttpGet("{id}")] // localhost:5001/api/members/bob-id
@@ -111,7 +112,7 @@ namespace API.Controllers
             }
 
             member.Photos.Remove(photo);
-            
+
             if (await memberRepository.SaveAllAsync()) return Ok();
             return BadRequest("Problem deleting photo");
         }

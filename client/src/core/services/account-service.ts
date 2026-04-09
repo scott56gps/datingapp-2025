@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { LoginCredentials, RegisterCredentials, User } from '../../types/user';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { LOCAL_STORAGE_FILTERS_KEY } from '../../constants';
 
 /* Injectable means that we can inject this into another component or service or class in the project */
 @Injectable({
@@ -42,6 +43,7 @@ export class AccountService {
 
   logout() {
     localStorage.removeItem('user');
+    localStorage.removeItem(LOCAL_STORAGE_FILTERS_KEY);
     this.currentUser.set(null);
   }
 }
