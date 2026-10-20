@@ -22,4 +22,11 @@ public class Member
     public AppUser User { get; set; } = null!;
     [JsonIgnore]
     public List<Photo> Photos { get; set; } = [];
+
+    // Members that like this member
+    [JsonIgnore]
+    public List<MemberLike> LikedByMembers { get; set; } = [];
+    // Members that this member likes
+    [JsonIgnore]
+    public List<MemberLike> LikedMembers { get; set; } = [];
 }
