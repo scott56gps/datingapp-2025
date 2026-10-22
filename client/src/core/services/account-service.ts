@@ -4,6 +4,7 @@ import { LoginCredentials, RegisterCredentials, User } from '../../types/user';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LOCAL_STORAGE_FILTERS_KEY } from '../../constants';
+import { LikesService } from './likes-service';
 
 /* Injectable means that we can inject this into another component or service or class in the project */
 @Injectable({
@@ -11,6 +12,7 @@ import { LOCAL_STORAGE_FILTERS_KEY } from '../../constants';
 })
 export class AccountService {
   private http = inject(HttpClient);
+  private likesService = inject(LikesService);
   currentUser = signal<User | null>(null); // Since we don't have a 'default' user, we specify that it is OK to have null as a type here.
   private baseUrl = environment.apiUrl;
 
@@ -39,11 +41,13 @@ export class AccountService {
   setCurrentUser(user: User) {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
+    this.likesService.getLikedIds();
   }
 
   logout() {
     localStorage.removeItem('user');
     localStorage.removeItem(LOCAL_STORAGE_FILTERS_KEY);
     this.currentUser.set(null);
+    this.likesService.clearLikedIds();
   }
 }
