@@ -8,10 +8,10 @@ namespace API.Controllers;
 
 public class LikesController(ILikesRepository likesRepository) : BaseApiController
 {
-    [HttpPost("like")]
+    [HttpPost("{targetMemberId}")]
     public async Task<ActionResult> AddLike(
-        [FromBody]string targetMemberId
-        )
+        string targetMemberId
+    )
     {
         var currentMemberId = User.GetMemberId();
 
@@ -30,9 +30,9 @@ public class LikesController(ILikesRepository likesRepository) : BaseApiControll
         return BadRequest("Failed to create like");
     }
 
-    [HttpDelete("like")]
+    [HttpDelete("{targetMemberId}")]
     public async Task<ActionResult> DeleteLike(
-        [FromBody] string targetMemberId
+        string targetMemberId
     )
     {
         var currentMemberId = User.GetMemberId();
