@@ -13,9 +13,6 @@ export class TimeAgoPipe implements PipeTransform {
     if (isNaN(date.getTime())) return '';
 
     const now = new Date();
-    console.log("PIPE: value: " + value)
-    console.log("PIPE: now: " + now)
-    console.log("PIPE: date: " + date)
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (seconds < 0) return 'just now';
