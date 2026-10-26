@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { User } from '../../types/user';
+import { Member } from '../../types/member';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +19,7 @@ export class LikesService {
    * targetMemberId.
    */
   addLike(targetMemberId: string) {
-    return this.http.post<User>(this.likesUrl + targetMemberId, {})
+    return this.http.post(this.likesUrl + targetMemberId, {})
   }
 
   /**
@@ -34,21 +35,21 @@ export class LikesService {
    * Retrieves a list of users that the currently logged in user likes.
    */
   getLikedUsers() {
-    return this.http.get(this.likesUrl + "?predicate=liked")
+    return this.http.get<Member[]>(this.likesUrl + "?predicate=liked")
   }
 
   /**
    * Retrieves a list of users that like the currently logged in user.
    */
   getUsersThatLike() {
-    return this.http.get(this.likesUrl + "?predicate=likedBy")
+    return this.http.get<Member[]>(this.likesUrl + "?predicate=likedBy")
   }
 
   /**
    * Retrieves a list of users that this user likes AND that like this user.
    */
   getMutuallyLikedUsers() {
-    return this.http.get(this.likesUrl + "?predicate=mutual")
+    return this.http.get<Member[]>(this.likesUrl + "?predicate=mutual")
   }
 
   /**
