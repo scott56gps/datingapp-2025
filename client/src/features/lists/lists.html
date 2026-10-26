@@ -1,1 +1,20 @@
-<p>lists works!</p>
+<div id="filter-container" class="inline-flex pb-6">
+  <div class="tabs tabs-box tabs-lg text-primary">
+    @for (tab of tabs; track tab.label) {
+    <button role="tab" class="tab"
+      [class.tab-active]="filterPredicate() === tab.value"
+      (click)="filterPredicate.set(tab.value)"
+    >
+      {{tab.label}}
+    </button>
+    }
+  </div>
+</div>
+
+<div class="flex flex-col">
+  <div class="grid grid-cols-5 gap-6">
+    @for (member of members.value() ?? []; track member.id) {
+    <app-member-card [member]="member" />
+    }
+  </div>
+</div>
