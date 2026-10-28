@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { User } from '../../types/user';
 import { Member } from '../../types/member';
+import { invalidatesCacheFor } from '../interceptors/cache-context';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,9 @@ export class LikesService {
    * targetMemberId.
    */
   addLike(targetMemberId: string) {
-    return this.http.post(this.likesUrl + targetMemberId, {})
+    return this.http.post(this.likesUrl + targetMemberId, {}, {
+      context: invalidatesCacheFor('/likes')
+    })
   }
 
   /**
@@ -28,7 +31,9 @@ export class LikesService {
    * changed.
    */
   removeLike(targetMemberId: string) {
-    return this.http.delete(this.likesUrl + targetMemberId)
+    return this.http.delete(this.likesUrl + targetMemberId, {
+      context: invalidatesCacheFor('/likes')
+    })
   }
 
   /**

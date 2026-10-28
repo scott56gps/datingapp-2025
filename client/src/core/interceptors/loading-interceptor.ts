@@ -2,6 +2,7 @@ import { HttpEvent, HttpInterceptorFn, HttpParams } from '@angular/common/http';
 import { delay, finalize, of, tap } from 'rxjs';
 import { BusyService } from '../services/busy-service';
 import { inject } from '@angular/core';
+import { INVALIDATE_CACHE } from './cache-context';
 
 const cache = new Map<string, HttpEvent<unknown>>();
 
@@ -13,7 +14,18 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     return paramString ? `${url}?${paramString}` : url;
   }
 
+  const invalidateCache = (urlPattern: string) => {
+    for (const key of cache.keys()) {
+      if (key.includes(urlPattern)) {
+        cache.delete(key)
+        console.log(`Cache invalidated for: ${key}`)
+      }
+    }
+  }
+
   const cacheKey = generateCacheKey(req.url, req.params);
+
+  req.context.get(INVALIDATE_CACHE).forEach(invalidateCache);
 
   if (req.method === 'GET') {
     const cachedResponse = cache.get(cacheKey);
